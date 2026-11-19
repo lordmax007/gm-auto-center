@@ -4,7 +4,7 @@ window.VISTORIA_CONFIG = {
   empresa: "GM Auto Center",
   cnpj: "65.741.636/0001-30",
   telefone: "(65) 99677-5961 / (65) 99649-4557",
-  endereco: "Avenida Castelo Branco, 1057",
+  endereco: "Avenida Castelo Branco, 1057 - Centro-Sul, Várzea Grande - MT, 78125-700",
   logo: "assets/logo.jpg",               // deixe "" para ficar sem logo
   numeroInicial: 1,                      // primeiro número de vistoria neste aparelho
   corPrincipal: [240, 108, 11],           // RGB do cabeçalho do PDF (laranja extraído da logo)
