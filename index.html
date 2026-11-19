@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#1b6b3f">
+  <title>Vistoria Digital</title>
+  <link rel="icon" href="assets/logo.jpg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <img id="brandLogo" class="brand-logo" alt="" hidden>
+      <h1 id="brandName">Vistoria Digital</h1>
+      <button type="button" id="btnSair" class="btn-sair" hidden>Sair</button>
+    </div>
+    <nav class="topnav" id="topnav" role="tablist" aria-label="Seções">
+      <button type="button" class="tab-btn active" data-tab="novo" role="tab" aria-selected="true">📝 Nova Retirada</button>
+      <button type="button" class="tab-btn" data-tab="andamento" role="tab" aria-selected="false">🚚 Em Andamento <span id="badgeAnd" class="tab-badge" hidden>0</span></button>
+      <button type="button" class="tab-btn" data-tab="finalizada" role="tab" aria-selected="false">✅ Finalizada</button>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ===================== LOGIN (modo nuvem) ===================== -->
+    <section id="view-login" class="view">
+      <form id="form-login" class="card login-card" novalidate>
+        <h2>Entrar</h2>
+        <p class="hint">Use o e-mail e a senha da equipe para acessar as vistorias de qualquer aparelho.</p>
+        <label>E-mail
+          <input id="loginEmail" type="email" autocomplete="username" inputmode="email" autocapitalize="none" maxlength="120">
+        </label>
+        <label>Senha
+          <input id="loginSenha" type="password" autocomplete="current-password" maxlength="100">
+        </label>
+        <div id="loginMsg" class="msg" role="alert" hidden></div>
+        <button type="submit" class="btn btn-primary btn-large" id="btnEntrar">Entrar</button>
+      </form>
+    </section>
+
+    <!-- ===================== NOVA RETIRADA ===================== -->
+    <section id="view-novo" class="view active">
+      <p class="hint" id="numHint">Próximo número de vistoria: <b id="proxNum">1</b></p>
+      <div id="msgRet" class="msg" role="alert" hidden></div>
+
+      <form id="form-retirada" novalidate autocomplete="off">
+
+        <details class="card" open>
+          <summary>Dados Essenciais</summary>
+          <p class="hint">Dados do veículo do cliente que está sendo retirado, não o seu guincho.</p>
+          <div class="grid">
+            <label>Placa do veículo *
+              <input id="placa" maxlength="8" required autocapitalize="characters" placeholder="Ex: ABC1D23">
+            </label>
+            <label>Veículo / Modelo
+              <input id="veiculo" maxlength="60" placeholder="Ex: Fiat Argo">
+            </label>
+            <label class="span2">Motorista / Vistoriador *
+              <input id="motorista" maxlength="80" required placeholder="Nome de quem está fazendo a vistoria">
+            </label>
+            <label>KM do odômetro
+              <input id="km" maxlength="9" inputmode="numeric" placeholder="0">
+            </label>
+            <label>Nível de combustível
+              <select id="combustivel">
+                <option>Vazio</option>
+                <option>1/4</option>
+                <option>1/2</option>
+                <option>3/4</option>
+                <option>Cheio</option>
+              </select>
+            </label>
+          </div>
+        </details>
+
+        <details class="card">
+          <summary>Cliente e Local (opcional)</summary>
+          <div class="grid">
+            <label>Cliente
+              <input id="cliente" maxlength="80" placeholder="Ex: João da Silva">
+            </label>
+            <label>Telefone do cliente
+              <input id="telefone" maxlength="16" inputmode="tel" placeholder="(65) 99999-9999">
+            </label>
+            <label class="span2">Local de retirada
+              <input id="retirada" maxlength="120" placeholder="Ex: Pátio Zona Sul">
+            </label>
+            <label class="span2">Local de entrega
+              <input id="entrega" maxlength="120" placeholder="Ex: Endereço do cliente">
+            </label>
+          </div>
+        </details>
+
+        <details class="card">
+          <summary>Checklist de Itens (opcional)</summary>
+          <p class="hint">Marque o que você conferiu. O que não for marcado fica como N/A.</p>
+          <div id="checklist" class="checklist"></div>
+          <div class="row">
+            <input id="novoItem" maxlength="40" placeholder="Outro item (ex.: Câmera de ré)" aria-label="Nome de um item extra">
+            <button type="button" id="addItem" class="btn btn-secondary">Adicionar item</button>
+          </div>
+        </details>
+
+        <details class="card">
+          <summary>Avarias pré-existentes (opcional)</summary>
+          <p class="hint">Só preencha se houver alguma avaria já existente no veículo.</p>
+          <button type="button" class="btn btn-secondary btn-block" id="btnAvaria">🚨 Registrar Avaria</button>
+          <div id="avariaPanel" class="panel" hidden>
+            <p class="hint">Escolha a vista, o tipo da avaria e toque no desenho onde ela está.</p>
+            <div id="viewTabs" class="tabs" role="tablist" aria-label="Vista do veículo"></div>
+            <div class="row">
+              <select id="tipoAvaria" aria-label="Tipo da avaria">
+                <option>Risco</option>
+                <option>Amassado</option>
+                <option>Trinca</option>
+                <option>Quebrado</option>
+                <option>Desgaste</option>
+                <option>Mancha</option>
+                <option>Faltando peça</option>
+              </select>
+              <input id="obsAvaria" maxlength="60" placeholder="Observação (opcional)" aria-label="Observação da avaria">
+            </div>
+            <div class="canvas-wrap"><canvas id="carCanvas" aria-label="Desenho do veículo para marcar avarias"></canvas></div>
+          </div>
+          <ol id="damageList" class="damage-list"></ol>
+          <p id="noDamage" class="hint">Nenhuma avaria marcada.</p>
+        </details>
+
+        <details class="card" open>
+          <summary>Fotos da retirada</summary>
+          <p class="hint">Tire fotos na hora ou escolha da galeria. Até 12 fotos.</p>
+          <label class="check-inline"><input type="checkbox" id="carimbo" checked> Carimbar data e hora nas fotos</label>
+          <div class="photo-actions">
+            <label class="btn btn-secondary">📷 Tirar Foto
+              <input id="fotosCam" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
+            </label>
+            <label class="btn btn-secondary">🖼️ Escolher da Galeria
+              <input id="fotosGal" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+            </label>
+          </div>
+          <div id="photoGrid" class="photo-grid"></div>
+        </details>
+
+        <details class="card">
+          <summary>Observações (opcional)</summary>
+          <label>Observação geral
+            <textarea id="obs" rows="3" maxlength="500" placeholder="Ex: carro lavado e com tanque cheio na retirada"></textarea>
+          </label>
+          <label>Observação da coleta
+            <textarea id="obsColeta" rows="3" maxlength="500" placeholder="Ex: cliente autorizou a retirada às 14h, sem estar presente"></textarea>
+          </label>
+        </details>
+
+        <details class="card" open>
+          <summary>Assinatura do responsável pela retirada *</summary>
+          <div class="grid">
+            <label>Nome *
+              <input id="nomeRet" maxlength="80" required placeholder="Nome completo de quem está retirando">
+            </label>
+            <label>RG / CPF
+              <input id="rgRet" maxlength="20" placeholder="Ex: 12.345.678-9">
+            </label>
+            <label class="span2">Telefone
+              <input id="telRet" maxlength="16" inputmode="tel" placeholder="(65) 99999-9999">
+            </label>
+          </div>
+          <div class="sig" data-sig="ret"></div>
+        </details>
+
+        <details class="card" open>
+          <summary>Assinatura do motorista / vistoriador *</summary>
+          <div class="sig" data-sig="mot"></div>
+        </details>
+
+        <section class="card privacy">
+          <label class="check-inline">
+            <input type="checkbox" id="lgpd">
+            <span>Concordo em informar estes dados para fins da vistoria. Eles ficam guardados apenas neste aparelho e no PDF gerado, até a vistoria ser apagada. Nada é enviado a servidores.</span>
+          </label>
+        </section>
+
+        <div class="submit-bar">
+          <button type="submit" class="btn btn-primary btn-large" id="salvarRet">💾 Salvar Retirada</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===================== SUCESSO ===================== -->
+    <section id="view-sucesso" class="view">
+      <div class="card success-card">
+        <div class="success-icon" aria-hidden="true">✅</div>
+        <h2>Retirada salva</h2>
+        <p id="sucessoTxt" class="hint"></p>
+        <div class="row">
+          <button type="button" class="btn btn-primary" id="goAnd">Ver em andamento</button>
+          <button type="button" class="btn btn-secondary" id="goNovo">Nova retirada</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== EM ANDAMENTO ===================== -->
+    <section id="view-andamento" class="view">
+      <p class="hint">Toque numa vistoria para registrar a entrega e finalizar.</p>
+      <div id="andList" class="card list"></div>
+    </section>
+
+    <!-- ===================== FINALIZADA ===================== -->
+    <section id="view-finalizada" class="view">
+      <p class="hint">Vistorias concluídas neste aparelho. Toque para ver ou gerar o PDF.</p>
+      <div id="finList" class="card list"></div>
+    </section>
+
+    <!-- ===================== ENTREGA ===================== -->
+    <section id="view-entrega" class="view">
+      <div class="detalhe-actions">
+        <button type="button" class="btn btn-text" id="btnVoltarEnt">← Voltar</button>
+      </div>
+      <div class="card">
+        <h2 id="entTitulo">Vistoria</h2>
+        <p class="hint" id="entSub"></p>
+      </div>
+
+      <form id="form-entrega" novalidate autocomplete="off">
+        <details class="card" open>
+          <summary>Dados da entrega</summary>
+          <label>Local de entrega
+            <input id="entLocal" maxlength="120" placeholder="Ex: Endereço do cliente">
+          </label>
+          <label>Observação da entrega
+            <textarea id="entObs" rows="3" maxlength="500" placeholder="Ex: carro devolvido sem avarias novas, tanque na metade"></textarea>
+          </label>
+        </details>
+
+        <details class="card" open>
+          <summary>Fotos da entrega (opcional)</summary>
+          <p class="hint">Tire fotos do local ou do carro na entrega, se precisar.</p>
+          <div class="photo-actions">
+            <label class="btn btn-secondary">📷 Tirar Foto
+              <input id="entCam" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
+            </label>
+            <label class="btn btn-secondary">🖼️ Escolher da Galeria
+              <input id="entGal" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+            </label>
+          </div>
+          <div id="entPhotoGrid" class="photo-grid"></div>
+        </details>
+
+        <details class="card" open>
+          <summary>Assinatura do responsável pela entrega *</summary>
+          <div class="grid">
+            <label>Nome *
+              <input id="entNome" maxlength="80" required placeholder="Nome completo de quem está recebendo">
+            </label>
+            <label>RG / CPF *
+              <input id="entRg" maxlength="20" required placeholder="Ex: 12.345.678-9">
+            </label>
+          </div>
+          <div class="sig" data-sig="ent"></div>
+        </details>
+
+        <div id="entMsg" class="msg" role="alert" hidden></div>
+
+        <div class="submit-bar">
+          <button type="submit" class="btn btn-primary btn-large" id="finalizar">✅ Finalizar Entrega</button>
+        </div>
+      </form>
+
+      <button type="button" class="btn btn-text btn-danger-text btn-block" id="btnExcluirEnt">Excluir esta vistoria do aparelho</button>
+    </section>
+
+    <!-- ===================== DETALHE (FINALIZADA) ===================== -->
+    <section id="view-detalhe" class="view">
+      <div class="detalhe-actions">
+        <button type="button" class="btn btn-text" id="btnVoltarDet">← Voltar</button>
+        <button type="button" class="btn btn-primary" id="btnBaixar">📄 Baixar PDF</button>
+        <button type="button" class="btn btn-outline" id="btnCompartilhar">🔗 Compartilhar PDF</button>
+      </div>
+      <div id="detalheContent" class="card"></div>
+      <div id="detMsg" class="msg" role="alert" hidden></div>
+      <button type="button" class="btn btn-text btn-danger-text btn-block" id="btnApagarDet">Apagar do aparelho</button>
+    </section>
+
+  </main>
+
+  <script src="vendor/jspdf.umd.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
