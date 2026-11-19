@@ -7,7 +7,7 @@ window.VISTORIA_CONFIG = {
   endereco: "Avenida Castelo Branco, 1057",
   logo: "assets/logo.jpg",               // deixe "" para ficar sem logo
   numeroInicial: 1,                      // primeiro número de vistoria neste aparelho
-  corPrincipal: [237, 125, 34],           // RGB do cabeçalho do PDF (laranja da marca)
+  corPrincipal: [240, 108, 11],           // RGB do cabeçalho do PDF (laranja extraído da logo)
 
   // Salvar na nuvem (acessar as vistorias de qualquer aparelho). Veja o passo a passo no README.
   // Deixe os dois vazios para guardar só neste aparelho.
